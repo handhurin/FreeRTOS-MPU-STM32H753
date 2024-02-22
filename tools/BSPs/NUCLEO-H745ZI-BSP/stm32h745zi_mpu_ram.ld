@@ -20,15 +20,18 @@ MEMORY
     SRAM4       (rwx) : ORIGIN = 0x38000000, LENGTH = 64K
 }
 
+/* Variable used to know where the limit between code and data in AXI SRAM */
+__AXI_SRAM_section_separation__ = ORIGIN(AXI_SRAM) + LENGTH(AXI_SRAM)/2;
+
 /* Variables used by FreeRTOS-MPU. */
 __privileged_functions_region_size__  = 64K;
 __privileged_data_region_size__       = 8K;
 
-__FLASH_segment_start__               = ORIGIN( FLASH );
-__FLASH_segment_end__                 = __FLASH_segment_start__ + LENGTH( FLASH );
+__FLASH_segment_start__               = ORIGIN(AXI_SRAM);
+__FLASH_segment_end__                 = __AXI_SRAM_section_separation__;
 
-__SRAM_segment_start__                = ORIGIN( AXI_SRAM );
-__SRAM_segment_end__                  = __SRAM_segment_start__ + LENGTH( AXI_SRAM );
+__SRAM_segment_start__                = __AXI_SRAM_section_separation__;
+__SRAM_segment_end__                  = ORIGIN(AXI_SRAM) + LENGTH(AXI_SRAM);
 
 /* Sections */
 SECTIONS
@@ -45,7 +48,7 @@ SECTIONS
         FILL(0xDEAD);
         . = __privileged_functions_start__ + __privileged_functions_region_size__;
         __privileged_functions_end__ = .;
-    } >FLASH
+    } >AXI_SRAM
 
     /* The program goes into the .text section */
     .text :
@@ -60,7 +63,7 @@ SECTIONS
         *(.text*)
         . = ALIGN(4);
         __text_end__ = .;
-    } >FLASH
+    } >AXI_SRAM
 
     /* Constant data goes into .rodata section */
     .rodata :
@@ -71,13 +74,10 @@ SECTIONS
         *(.rodata*)
         . = ALIGN(4);
         __rodata_end__ = .;
-    } >FLASH
-
-    /* Used by the startup to initialize data */
-    __data_start_initialize__ = LOADADDR(.privileged_data);
+    } >AXI_SRAM
 
     /* FreeRTOS kernel data. */
-    .privileged_data :
+    .privileged_data __AXI_SRAM_section_separation__ :
     {
         . = ALIGN(4);
         __privileged_data_start__ = .;
@@ -87,22 +87,22 @@ SECTIONS
         FILL(0xDEAD);
         . = __privileged_data_start__ + __privileged_data_region_size__;
         __privileged_data_end__ = .;
-    } >AXI_SRAM AT> FLASH
+    } >AXI_SRAM
 
     /* Initialized data go into the .data section */
     .data :
     {
         . = ALIGN(4);
+        __data_start__ = .;
         *(.data)
         *(.data*)
         . = ALIGN(4);
         __data_end__ = .;
-    } >AXI_SRAM AT> FLASH
+    } >AXI_SRAM
 
     /* Uninitialised data goes into .bss section */
     .bss :
     {
-        . = ALIGN(4);
         __bss_start__ = .;
         *(.bss)
         *(.bss*)
