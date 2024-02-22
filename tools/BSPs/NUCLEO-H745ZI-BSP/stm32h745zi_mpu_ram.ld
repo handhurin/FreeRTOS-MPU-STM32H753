@@ -20,18 +20,15 @@ MEMORY
     SRAM4       (rwx) : ORIGIN = 0x38000000, LENGTH = 64K
 }
 
-/* Variable used to know where the limit between code and data in AXI SRAM */
-__AXI_SRAM_section_separation__ = ORIGIN(AXI_SRAM) + LENGTH(AXI_SRAM)/2;
-
 /* Variables used by FreeRTOS-MPU. */
 __privileged_functions_region_size__  = 64K;
 __privileged_data_region_size__       = 8K;
 
 __FLASH_segment_start__               = ORIGIN(AXI_SRAM);
-__FLASH_segment_end__                 = __AXI_SRAM_section_separation__;
+__FLASH_segment_end__                 = ORIGIN(AXI_SRAM) + LENGTH(AXI_SRAM);
 
-__SRAM_segment_start__                = __AXI_SRAM_section_separation__;
-__SRAM_segment_end__                  = ORIGIN(AXI_SRAM) + LENGTH(AXI_SRAM);
+__SRAM_segment_start__                = ORIGIN(SRAM1);
+__SRAM_segment_end__                  = ORIGIN(SRAM1) + LENGTH(SRAM1);
 
 /* Sections */
 SECTIONS
@@ -77,7 +74,7 @@ SECTIONS
     } >AXI_SRAM
 
     /* FreeRTOS kernel data. */
-    .privileged_data __AXI_SRAM_section_separation__ :
+    .privileged_data :
     {
         . = ALIGN(4);
         __privileged_data_start__ = .;
@@ -87,7 +84,7 @@ SECTIONS
         FILL(0xDEAD);
         . = __privileged_data_start__ + __privileged_data_region_size__;
         __privileged_data_end__ = .;
-    } >AXI_SRAM
+    } >SRAM1
 
     /* Initialized data go into the .data section */
     .data :
@@ -98,7 +95,7 @@ SECTIONS
         *(.data*)
         . = ALIGN(4);
         __data_end__ = .;
-    } >AXI_SRAM
+    } >SRAM1
 
     /* Uninitialised data goes into .bss section */
     .bss :
@@ -109,7 +106,7 @@ SECTIONS
         *(COMMON)
         . = ALIGN(4);
         __bss_end__ = .;
-    } >AXI_SRAM
+    } >SRAM1
 
     /* Use of the rest of RAM for the stack and heap */
     ._user_heap_stack :
@@ -120,5 +117,5 @@ SECTIONS
         . = . + __Min_Heap_Size__;
         . = . + __Min_Stack_Size__;
         . = ALIGN(8);
-    } >AXI_SRAM
+    } >SRAM1
 }

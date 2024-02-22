@@ -138,6 +138,7 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
  * disables cache. Do not mark the SRAM as shareable because caching is being
  * used. TEX=0, S=0, C=1, B=1. */
 #define configTEX_S_C_B_SRAM						( 0x03UL )
+#define configTEX_S_C_B_FLASH						( 0x03UL )
 
 /* Do not allow critical sections from unprivileged tasks. */
 #define configALLOW_UNPRIVILEGED_CRITICAL_SECTIONS	0
