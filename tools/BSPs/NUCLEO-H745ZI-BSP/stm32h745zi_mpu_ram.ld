@@ -1,9 +1,6 @@
 /* Entry Point */
 ENTRY(Reset_Handler)
 
-/* Highest address of the user mode stack */
-__stack_end__ = ORIGIN(AXI_SRAM) + LENGTH(AXI_SRAM); /* end of "AXI_SRAM" Ram type memory */
-
 __Min_Heap_Size__ = 0x200; /* required amount of heap  */
 __Min_Stack_Size__ = 0x400; /* required amount of stack */
 
@@ -19,6 +16,9 @@ MEMORY
     SRAM3       (rwx) : ORIGIN = 0x30040000, LENGTH = 32K
     SRAM4       (rwx) : ORIGIN = 0x38000000, LENGTH = 64K
 }
+
+/* Highest address of the user mode stack */
+__stack_end__ = ORIGIN(SRAM1) + LENGTH(SRAM1); /* end of "AXI_SRAM" Ram type memory */
 
 /* Variables used by FreeRTOS-MPU. */
 __privileged_functions_region_size__  = 64K;
