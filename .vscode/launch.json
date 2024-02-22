@@ -5,21 +5,44 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug STM32H7 FLASH",
             "cwd": "${workspaceRoot}",
             "executable": "./build/target/freertos-mpu-test-debug.elf",
-            "name": "Debug with OpenOCD",
             "preLaunchTask": "Build Program",
             "request": "launch",
             "type": "cortex-debug",
             "gdbPath": "gdb-multiarch",
             "servertype": "openocd",
             "configFiles": [
-                "interface/stlink-v2-1.cfg",
+                "interface/stlink.cfg",
                 "target/stm32h7x.cfg"
             ],
             "searchDir": [],
             "runToEntryPoint": "main",
             "showDevDebugOutput": "none"
         },
+        {
+            "name": "Debug STM32H7 RAM",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/target/freertos-mpu-test-debug.elf",
+            "preLaunchTask": "Build Program",
+            "request": "launch",
+            "type": "cortex-debug",
+            "gdbPath": "gdb-multiarch",
+            "servertype": "openocd",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32h7x.cfg"
+            ],
+            "overrideLaunchCommands" : [
+                "monitor reset init",
+                "monitor gdb_breakpoint_override hard",
+                "monitor load_image ./build/target/flight-software-debug.elf",
+                "monitor reset halt"
+            ],
+            "searchDir": [],
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none"
+        }
     ]
 }

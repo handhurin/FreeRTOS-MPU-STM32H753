@@ -14,9 +14,9 @@ OS_DIR    = $(TOOLS_DIR)/OS/FreeRTOS
 HALs_DIR  = $(TOOLS_DIR)/HALs
 BSPs_DIR  = $(TOOLS_DIR)/BSPs
 
-CONF_DIR           = $(WORKSPACE)/conf
-CONF_FREERTOS_DIR  = $(CONF_DIR)/conf_FreeRTOS
-CONF_HALS_DIR      = $(CONF_DIR)/conf_HALs
+GEN_DIR           = $(WORKSPACE)/gen
+CONF_FREERTOS_DIR  = $(GEN_DIR)/conf_FreeRTOS
+CONF_HALS_DIR      = $(GEN_DIR)/conf_HALs
 
 APPLICATION_DIR = $(WORKSPACE)/application
 
